@@ -1,0 +1,229 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <script src="components/loader.js"></script>
+  <script src="lib/angular/angular.min.js"></script>
+  <script src="lib/onsenui/js/onsenui.min.js"></script>
+  <script src="lib/onsenui/js/angular-onsenui.min.js"></script>
+
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>
+      ons.bootstrap()
+      .controller('TabbarController', function($scope, $http) {
+
+        $scope.recipes = [];
+        $scope.recipeSpecs = {Ingredients:'', Measurements:'', Name:'', Category:'', Instruction:'', ThumbImg:'', Video:'', Source:''}
+
+        var getAllrecipes = function(){
+          $http.get('http://192.168.1.81:5000/recipe').then(function(response){
+            console.log(response.data);
+            $scope.recipes = response.data;
+          }).catch(function(err){
+            console.log(err);
+          });
+        }
+
+        getAllrecipes();
+
+
+        var getSavedRecipes = function(){
+          $http.get('http://192.168.1.81:5000/recipe/5c8a8d521c9d44000010eb5f').then(function(response){
+            console.log(response.data);
+            $scope.savedRecipes = response.data;
+          }).catch(function(err){
+            console.log(err);
+          });
+        }
+
+        getSavedRecipes();
+
+            $scope.saveRecipe = function(recipeId, Instruction,Ingredients,ThumbImg,
+                                         Measurements,Category,Name,Video,Source ) {
+
+            $scope.recipeSpecs.Instruction=Instruction;
+            $scope.recipeSpecs.Ingredients=Ingredients;
+            $scope.recipeSpecs.ThumbImg=ThumbImg;
+            $scope.recipeSpecs.Measurements=Measurements;
+            $scope.recipeSpecs.Category=Category;
+            $scope.recipeSpecs.Name=Name;
+            $scope.recipeSpecs.video=Video;
+            $scope.recipeSpecs.Source=Source;
+            
+           
+            var req = {
+            method: 'POST',
+            url: 'http://192.168.1.81:5000/recipe/5c8a8d521c9d44000010eb5f/',
+            data:  $scope.recipeSpecs
+            }
+
+            $http(req).then(function(res){
+                  console.log('[Save Recipe]', res.data);
+              
+            }).catch(function(err)
+            {
+                console.log('[Error Message] ', err.data);
+                
+            });
+            }
+
+            
+             $scope.delSavedRecipe = function(recipeId)
+                {
+                  var request = {
+                  method: 'DELETE',
+                  url: 'http://192.168.1.81:5000/recipe/5c8a8d521c9d44000010eb5f/'+recipeId,
+                  }
+                  $http(request).then(function(del){
+                          console.log('[Delete]', del.data);
+                            }).catch(function(err)
+                    {
+                        console.log('[Error Message] ', err.data);
+                        
+                    });
+                }
+
+
+        this.init = function(e) {
+      // Ensure the emitter is the current page, not a nested one
+      if (e.target === e.currentTarget) {
+        var page = e.target;
+        // Safely access data
+        console.log('init event', page.data);
+      }
+    };
+
+        $scope.title = 'Tab 1';
+        $scope.updateTitle = function($event) {
+          $scope.title = angular.element($event.tabItem).attr('label');
+        };
+      });
+  </script>
+</head>
+<body>
+<ons-navigator swipeable var="myNavigator" page="home.html"></ons-navigator>
+<template id="home.html">
+  <ons-page ng-controller="TabbarController as app">
+    <ons-toolbar class="toolbar">
+      <div class="center">MARC'S RECIPE</div>
+    </ons-toolbar>
+  
+    <ons-tabbar swipeable position="top" ons-prechange="updateTitle($event)" >
+      <ons-tab page="tab1.html" label="Home" icon="ion-home" class="tabs">
+      </ons-tab>
+      <ons-tab page="tab2.html" label="Saved" icon="ion-bookmark" active-icon="ion-ios-heart-outline" class="tabs">
+      </ons-tab>
+    </ons-tabbar>
+  
+  <template id="tab1.html">
+    <ons-page id="Tab1" ng-controller="TabbarController as app">
+      <p>
+          <div class="users" ng-repeat="user in recipes">
+              <ons-card  ng-click="myNavigator.pushPage('view.html', {data: {
+                Name: user.Name,
+                ThumbImg: user.ThumbImg,
+                Ingredients: user.Ingredients,
+                Measurements: user.Measurements,
+                Category: user.Category,
+                Instruction: user.Instruction,
+                Video: user.Video,
+                Source: user.Source,
+                Id:user._id
+              }})" class="recipe">
+              <div class="title">
+                 <img ng-src= {{user.ThumbImg}} alt="image"  class="recipe__img">
+                 <label for="check-1" class="center recipe__title"> {{user.Name}}</label>
+                 <label for="check-2" class="center recipe__category"> {{user.Category}}</label>
+              </div>
+           </ons-card>
+    
+          </div>
+      </p>
+    </ons-page>
+  </template>
+
+  <template id="view.html">
+      <ons-page ng-controller="TabbarController as app" ons-init="app.init($event)">
+        <ons-toolbar class="toolbar toolbar--material">
+          <div class="left"><ons-back-button>Page 1</ons-back-button></div>
+          <div class="center" style="font-size: 20px; width: 50px" >{{ myNavigator.topPage.data.Name}}</div>
+          <div class="toolbar__right toolbar--material__right"> 
+          <span class="toolbar-button toolbar-button--material" ng-click="saveRecipe(myNavigator.topPage.data.Id,
+          myNavigator.topPage.data.Instruction,
+          myNavigator.topPage.data.Ingredients,
+          myNavigator.topPage.data.ThumbImg,
+          myNavigator.topPage.data.Measurements,
+          myNavigator.topPage.data.Category,
+          myNavigator.topPage.data.Name,
+          myNavigator.topPage.data.Video,
+          myNavigator.topPage.data.Source)">
+              <i class="zmdi zmdi-bookmark" style="color:white;"></i>
+            </span>
+          </div>
+        </ons-toolbar>
+    
+        <p><img ng-src= {{myNavigator.topPage.data.ThumbImg}} class="view__img"></p>   
+
+        <ons-list>
+            <ons-list-item expandable>
+              <h3>INGREDIENTS</h3>
+              <div class="expandable-content" style="display: block; width:100%; opacity:0.5;">{{myNavigator.topPage.data.Ingredients}}</div>
+            </ons-list-item>
+
+            <ons-list-item expandable>
+                MEASUREMENTS
+                <div class="expandable-content" style="display: block; width:100%; opacity:0.5;">{{myNavigator.topPage.data.Measurements}}</div>
+              </ons-list-item>
+
+            <ons-list-item expandable>
+                CATEGORY
+                <div class="expandable-content" style="display: block; width:100%; opacity:0.5;">{{myNavigator.topPage.data.Category}}</div>
+              </ons-list-item>
+        
+            <ons-list-item expandable>
+                INSTRUCTION
+                <div class="expandable-content" style="display: block; width:100%;">{{myNavigator.topPage.data.Instruction}}</div>
+              </ons-list-item>
+
+            <ons-list-item expandable>
+                SOURCE
+                <div class="expandable-content" style="display: block; width:100%;">{{myNavigator.topPage.data.Source}}</div>
+              </ons-list-item>
+        <p>
+          <video width="320" height="240" controls>
+            <source ng-src={{myNavigator.topPage.data.Video}} type="video/mp4" >
+          </video>
+        </p>
+      </ons-list>
+      </ons-page>
+    </template>
+  
+  <template id="tab2.html">
+    <ons-page id="Tab2">
+        <div class="users" ng-repeat="user in savedRecipes">
+            <ons-card class="recipe">
+            <div class="title">
+                <img ng-src= {{user.ThumbImg}} alt="image"  class="recipe__img">
+                <label for="check-1" class="center recipe__title"> {{user.Name}}</label>
+                <label for="check-2" icon="ion-disc" class=" SavedRecipe__category"> {{user.Category}}</label>
+                <!-- <span class="toolbar-button toolbar-button--material" ng-click="delSavedRecipe()">
+                    <i class="zmdi zmdi-delete" style="color:#00c07f; display: block;
+                    margin-top:1rem!important;
+                    margin-right: 3rem;"></i>
+                  </span> -->
+             </div>
+         </ons-card>
+        </div>
+    </ons-page>
+  </template>
+
+</ons-page>
+</template>
+</body>
+</html>

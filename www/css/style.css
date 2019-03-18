@@ -1,0 +1,114 @@
+/**/
+:root{
+    --bg-color: #fff;
+    --text-color: #00c07f;
+    --text-color-light: #00c080b9;
+    --tool-bar-bg:#00c07f;
+    --tab-color: #fff;
+}
+body{
+    font-family: Georgia, 'Times New Roman', Times, serif !important;
+}
+.toolbar__title {
+    line-height: 44px;
+    font-size: 25px;
+    font-weight: 300;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+}
+.toolbar{
+    background-color: var(--tool-bar-bg) !important;
+
+}
+
+.tabs{
+    background: var(--tool-bar-bg) !important;
+}
+:checked + .tabbar__button {
+    color: white;
+    box-shadow: none;
+    border-top: none;
+} 
+
+.page, .page__content, .page--material, .page--material__content {
+
+    background: var(--bg-color);
+   
+}
+
+.recipe {
+    font-family: -apple-system, 'Helvetica Neue', 'Helvetica', 'Arial', 'Lucida Grande', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 200;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
+    border-radius: 8px;
+    background-color: white;
+    box-sizing: border-box;
+    display: block;
+    margin: 6px !important;
+    color: var(--text-color) !important;
+    height: 100px !important;
+    padding: 0 !important;
+    text-align: left;
+    word-wrap: break-word;
+}
+
+.recipe__img{
+    float: left;
+    height: 100px;
+    width: 100px;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.recipe__title{
+    font-size: 18px;
+    margin-left: 10px;
+    font-weight: bold;
+
+}
+
+.recipe__category{
+    display: block;
+    margin-top:2rem!important;
+    margin-left: 3rem;
+    color: var(--text-color-light);
+    font-style: italic;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+.SavedRecipe__category{
+    display: block;
+    margin-top:1rem!important;
+    margin-left: 3rem;
+    color: var(--text-color-light);
+    font-style: italic;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+.view__img{
+    float: center;
+    height: 300px;
+    width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.back-button--material__icon {
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+    fill: #fff;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    height: 100%;
+}
